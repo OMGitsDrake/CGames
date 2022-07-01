@@ -1,10 +1,12 @@
 #include <iostream>
 #include <conio.h>
 #include <math.h>
-#include "include\utils.h"
+// For color changing characters on screen
+#include "..\\include\\utils.h"
 
 using namespace std;
 
+// Initializes the grid
 void initPrintGrid(unsigned int grid[5][5]){
     cout << "= A B C D E =" << endl;
     
@@ -20,6 +22,7 @@ void initPrintGrid(unsigned int grid[5][5]){
     cout << "============" << endl;
 }
 
+// Prints the actual grid
 void printGrid(unsigned int grid[5][5]){
     cout << "= A B C D E =" << endl;
     
@@ -41,6 +44,7 @@ void printGrid(unsigned int grid[5][5]){
     cout << "============" << endl;
 }
 
+// Prints an empty grid for the start
 void emptyGrid(){
     cout << "= A B C D E =" << endl;
     cout << "1|0|0|0|0|0|=" << endl;
@@ -51,6 +55,7 @@ void emptyGrid(){
     cout << "=============" << endl;
 }
 
+// If an input coordinate is higher than 5 it is set to 1
 void validate(unsigned int r, char c){
     if(r > 5)
         r = 1;
@@ -58,6 +63,7 @@ void validate(unsigned int r, char c){
         c = 1;
 }
 
+// Checks if the player's input describes a ship placed on a free space
 void checkGrid(unsigned int grid[5][5], unsigned int r, unsigned int c){
     r = (r == 0) ? r : r - 1;
     c = (c == 0) ? c : c - 1;
@@ -74,6 +80,7 @@ void checkGrid(unsigned int grid[5][5], unsigned int r, unsigned int c){
         grid[r][c - 1] = 1;
 }
 
+// Returns True if the player actually hit an enemy ship
 bool guessShip(unsigned int grid[5][5], unsigned int r, unsigned int c){    
     r = (r == 0) ? r : r - 1;
     c = (c == 0) ? c : c - 1;
@@ -86,6 +93,7 @@ bool guessShip(unsigned int grid[5][5], unsigned int r, unsigned int c){
     return false;
 }
 
+// Help screen
 int getHelp(int argc, char** argv){
     if(argc > 1){
         if(strcmp(argv[1], "-h") == 0){
@@ -112,30 +120,34 @@ int getHelp(int argc, char** argv){
     return 0;
 }
 
+// Gets the actual coordinate from a given letter in the range [A, E]
 unsigned int getRow(char l){
     return l - 64;
 }
 
+// Actual game
 int main(int argc, char** argv){
     if(getHelp(argc, argv))
         return 0;
-
+// Label because it's fun to think in Assembly :)
 start:
-    unsigned int grid [5][5];
-    unsigned int copy [5][5];
-    unsigned int attempts = 20;
-    unsigned int gameOver = 0;
-    unsigned int ships = 5;
-    unsigned int col;
-    unsigned int row;
-    char letter;
-    char replay;
+    unsigned int grid [5][5];   // Game board
+    unsigned int copy [5][5];   // Copy of the board for utility
+    unsigned int attempts = 20; // Max attempts
+    unsigned int gameOver = 0;  // Game Over flag
+    unsigned int ships = 5;     // Number of ships
+    unsigned int col;           // Column
+    unsigned int row;           // Row
+    char letter;                // Letter for (<number>, <letter>) coordinates
+    char replay;                // Replay flag if players want to play another game straight on
     
     system("cls");
     initPrintGrid(grid);
     initPrintGrid(copy);
 
+    // Game loop
     do{
+        // Ship insertion
         cout << "Inserire posizioni Navi: (<Numero>, <Lettera>)" << endl;
         for (int i = 0; i < 5; i++){
             cout << i + 1 << ':' << endl;
@@ -158,6 +170,7 @@ start:
 
         system("cls");
 
+        // Guessing loop
         do{
             cout << "Tentativi rimasti: " << attempts << endl;
             cout << "Navi rimaste: " << ships << endl;
@@ -169,6 +182,7 @@ start:
             col = getRow(letter);
             validate(row, col);
 
+            // If the player guesses a ship's position the ships counter is decreased
             if(guessShip(grid, row, col)){
                 copy[row-1][col-1] = 2;
                 printGrid(copy);
@@ -184,12 +198,15 @@ start:
                 cout << "Niente..." << endl;
             }
             SetColor(7);
+        // Until you have attempts AND there are ships
         } while (ships > 0 && attempts > 0);
 
+        // If there are no ships left the game is over with a win by the guesser
         if (ships == 0){
             gameOver = true;
             cout << "Vittoria!\nTutte le navi abbattute." << endl;
         }
+        // If there are no attempts left the game is over with a win by the ship placer
         else if (attempts == 0){
             gameOver = true;
             printGrid(grid);
@@ -197,6 +214,7 @@ start:
         }
     } while (!gameOver);
     
+    // Asks to play again
     cout << "Nuova partita? (y/n)" << endl;
     replay = getch();
     cout << replay;
