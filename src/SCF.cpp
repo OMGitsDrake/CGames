@@ -59,6 +59,11 @@ void game(){
             printf("Hai Preso!\n\n");
             return;
         }else{
+            if(choice == 3 and cpu_choice == 1){
+                SetColor(4);
+                printf("Hai Perso!");
+                return;
+            }
             SetColor(2);
             printf("Hai vinto!\n\n");
             return;
